@@ -1,10 +1,11 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
+	"os"
 )
 
 func getRoot(w http.ResponseWriter, r *http.Request) {
@@ -13,11 +14,18 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	const PORT string = ":8080"
 	// Routes
 	http.HandleFunc("/", getRoot)
 
-	// Start Server
-	fmt.Println("Server running on localhost" + PORT);
-	log.Fatal(http.ListenAndServe(PORT, nil))
+	// Start server
+	fmt.Println("Server Started")
+	err := http.ListenAndServe(":8080", nil)
+
+	// Error checking
+	if errors.Is(err, http.ErrServerClosed) {
+		fmt.Println("Server closed")
+	} else if err != nil {
+		fmt.Printf("Error starting server: %s\n", err)
+		os.Exit(1)
+	}
 }
